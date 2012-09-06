@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+		<title>diff</title>
+		<meta name="description" content="" />
+		<meta name="author" content="tristan" />
+
+		<meta name="viewport" content="width=device-width; initial-scale=1.0" />
+
+		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<script type="text/javascript" src="../js/vendor/jquery-1.7.2.js"></script>
+		<script type="text/javascript" src="../js/diff.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/diff.css" /> 
+		<script>
+			$(function() {
+				var lines0 = ['if (newI != newJ) {',
+					'var m = Math.min(newI, newJ) + 1, n = Math.max(newI, newJ), table, lines;',
+					'if (newI < newJ) {',
+						'table = tableLeft;',
+						'lines = lines0;',
+						'leftFillings = leftFillings + n - m + 1;',
+					'} else {',
+						'table = tableRight;',
+						'lines = lines1;',
+						'rightFillings = rightFillings + n - m + 1;'];
+	var lines1 = ['while (j < common.b) {',
+					'$("<tr></tr>").append($("<td></td").text(j).addClass("lineno"))',
+														'.append($("<td></td").text(lines1[j - 1]).addClass("mismatch"))',
+														'.appendTo(tableRight);',
+					'j++;',
+				'}',
+				'var newI = (i + leftFillings), newJ = j + rightFillings;',
+					'if (newI != newJ) {',
+					'var m = Math.min(newI, newJ) + 1, n = Math.max(newI, newJ), table, lines;',
+					'if (newI < newJ) {',
+						'table = tableright;',
+						'lines = lines0;',
+						'leftFillings = leftFillings + n - m + 1;',
+					'} else {',
+						'lines = lines1;',
+						'rightFillings = rightFillings + n - m + 1;'];
+				var commons = window.util.Diff(lines0, lines1);
+				$("#output").append(window.util.GenerateComparison(lines0, lines1, commons));
+			});
+		</script>
+		<style type="text/css">
+			#output {
+			}
+		</style>
+	</head>
+
+	<body>
+		<div>
+			<header>
+				<h1>diff</h1>
+			</header>
+			<nav>
+				<p>
+					<a href="/">Home</a>
+				</p>
+				<p>
+					<a href="/contact">Contact</a>
+				</p>
+			</nav>
+
+			<div id="output">
+
+			</div>
+
+			<footer>
+				<p>
+					&copy; Copyright  by tristan
+				</p>
+			</footer>
+		</div>
+	</body>
+</html>

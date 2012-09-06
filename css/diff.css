@@ -1,0 +1,35 @@
+.comparison-result {
+	position:relative;
+	overflow:scroll;
+	background:#e0e0e0;
+	width:2000px;
+}
+
+.left-file {
+	float:left;
+	border-collpase:collapse;
+	margin:0;
+	padding:0;
+}
+
+.right-file {
+	float:left;
+	border-collpase:collapse;
+	margin:0;
+	padding:0;
+}
+
+.lineno {
+	background:#909090;
+	border-right:1px solid black;
+	text-align:right;
+}
+
+.mismatch {
+	background:#e3cc85;
+	height:1.5em;
+}
+
+.match {
+	
+}
