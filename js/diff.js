@@ -189,8 +189,8 @@
 (function(window, $) {
 	var util = window.util = (window.util || {});
 	util.GenerateComparison = function (lines0, lines1, commonLines) {
-		var tableLeft = $("<table></table>").addClass("left-file"),
-			tableRight = $("<table></table>").addClass("right-file");
+		var tableLeft = $("<table></table>").addClass("file-content"),
+			tableRight = $("<table></table>").addClass("file-content"),
 			i = 1, j = 1, leftFillings = 0, rightFillings = 0;
 			$.each(commonLines, function(index, common) {
 				if ((common.a < 1 && common.a > lines0.length) || 
@@ -247,8 +247,7 @@
 														.appendTo(tableRight);
 				j++;
 			}
-			return $("<div></div>").addClass("comparison-result").append(tableLeft)
-				.append(tableRight);
+			return [tableLeft, tableRight];
 	};
 })(window, jQuery);
 
@@ -268,7 +267,30 @@
 		}
 		return formatter;
 	};
-	util.ToLines = function (str) {
-		return str.split(/\r\n|\n|\r/g);
-	}
+})(window);
+
+/*
+ * File Operations
+ */
+(function(window) {
+	var util = window.util = (window.util || {});
+	var fileIO = util.fileIO = (util.fileIO || {});
+	fileIO.ReadyState = {
+		EMPTY: 0,
+		LOADING: 1,
+		DONE: 2
+	};
+	fileIO.onPostRead = function() {
+		console.log("event handler onPostRead");
+	};
+	fileIO.Read = function(file) {
+		var reader = new FileReader();
+		reader.onload = function() {
+			fileIO.onPostRead(reader.result);
+		};
+		reader.onerror = function() {
+			fileIO.onPostRead(reader.error, file);
+		}
+		reader.readAsText(file);
+	};
 })(window);

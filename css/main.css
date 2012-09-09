@@ -1,0 +1,33 @@
+#content {
+	position: relative;
+}
+.select-file {
+	
+}
+.comparison-result {
+	display:table;
+	table-layout:fixed;
+	position:relative;
+	overflow: scroll;
+	background:#e0e0e0;
+	width:90%;
+}
+.file-content-wrapper {
+	width: 50%;
+	display:table-cell;
+	overflow:hidden;
+}
+.left {
+	position:relative;
+	left:0;
+	top:0;
+}
+.right {
+	position:relative;
+	right:0;
+	bottom:0;
+}
+#tool {
+	display:table-cell;
+	width:25px;
+}

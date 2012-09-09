@@ -19,62 +19,70 @@
 		<script type="text/javascript" src="../js/vendor/jquery-1.7.2.js"></script>
 		<script type="text/javascript" src="../js/diff.js"></script>
 		<link rel="stylesheet" type="text/css" href="../css/diff.css" /> 
+		<link rel="stylesheet" type="text/css" href="../css/main.css" />
 		<script>
 			$(function() {
-				var lines0 = ['if (newI != newJ) {',
-					'var m = Math.min(newI, newJ) + 1, n = Math.max(newI, newJ), table, lines;',
-					'if (newI < newJ) {',
-						'table = tableLeft;',
-						'lines = lines0;',
-						'leftFillings = leftFillings + n - m + 1;',
-					'} else {',
-						'table = tableRight;',
-						'lines = lines1;',
-						'rightFillings = rightFillings + n - m + 1;'];
-	var lines1 = ['while (j < common.b) {',
-					'$("<tr></tr>").append($("<td></td").text(j).addClass("lineno"))',
-														'.append($("<td></td").text(lines1[j - 1]).addClass("mismatch"))',
-														'.appendTo(tableRight);',
-					'j++;',
-				'}',
-				'var newI = (i + leftFillings), newJ = j + rightFillings;',
-					'if (newI != newJ) {',
-					'var m = Math.min(newI, newJ) + 1, n = Math.max(newI, newJ), table, lines;',
-					'if (newI < newJ) {',
-						'table = tableright;',
-						'lines = lines0;',
-						'leftFillings = leftFillings + n - m + 1;',
-					'} else {',
-						'lines = lines1;',
-						'rightFillings = rightFillings + n - m + 1;'];
-				var commons = window.util.Diff(lines0, lines1);
-				$("#output").append(window.util.GenerateComparison(lines0, lines1, commons));
+				var util = window.util;
+				var fileIO = util.fileIO;
+				$("#btnDiff").click(function() {
+					var files = $(".select-file > input[type=file]").get()[0].files;
+					if (files.length != 2) {
+						window.alert("You should choose 2 files to compare them!");
+						return;
+					}
+					var msg = "", maxSize = 1024*1024*1024;
+					if (files[0].size > maxSize) {
+						msg = msg + files[0].name;
+					}
+					if (files[1].size > maxSize) {
+						msg = msg + "\n" + files[1].name;
+					}
+					if (msg != "") {
+						window.alert("The following file(s) larger than 1MB:" + msg);
+						return;
+					}
+					var done = 0;
+					var lines = [];
+					fileIO.onPostRead = function() {
+						var len = arguments.length;
+						if (len == 2) {
+							window.alert("Failed to open file: " + arguments[1].name);
+							return;
+						} else {
+							lines.push(arguments[0].split(/[\r\n]+/));
+							done++;
+							if (done == 2) {
+								var commons = util.Diff(lines[0], lines[1]);
+								var result = util.GenerateComparison(lines[0], lines[1], commons);
+								$(".file-content-wrapper.left").append(result[0]);
+								$(".file-content-wrapper.right").append(result[1]);
+							}
+						}
+					};
+					$.each(files, function(index, file) {
+						window.util.fileIO.Read(file);
+					});
+				});
 			});
 		</script>
-		<style type="text/css">
-			#output {
-			}
-		</style>
 	</head>
-
 	<body>
 		<div>
 			<header>
-				<h1>diff</h1>
+				<h1>File Comparison and Merging</h1>
 			</header>
-			<nav>
-				<p>
-					<a href="/">Home</a>
-				</p>
-				<p>
-					<a href="/contact">Contact</a>
-				</p>
-			</nav>
-
-			<div id="output">
-
+			<div id="content">
+				<div class="select-file">
+					<label for="files">Please select two files to diff:</label>
+					<input type="file" value="File" multiple required="true" id="files" />
+					<input type="button" id="btnDiff" value="Diff" />
+				</div>
+				<div class="comparison-result">
+					<div class="file-content-wrapper left"></div>
+					<div id="tool"></div>
+					<div class="file-content-wrapper right"></div>
+				</div>
 			</div>
-
 			<footer>
 				<p>
 					&copy; Copyright  by tristan
