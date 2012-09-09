@@ -197,13 +197,13 @@
 					(common.b < 1 && common.b > lines1.length)) return;
 				while (i < common.a) {
 					$("<tr></tr>").append($("<td></td").text(i).addClass("lineno"))
-														.append($("<td></td").text(lines0[i - 1]).addClass("mismatch"))
+														.append($("<td></td").text(lines0[i - 1]).addClass("mismatch line-content"))
 														.appendTo(tableLeft);
 					i++;
 				}
 				while (j < common.b) {
 					$("<tr></tr>").append($("<td></td").text(j).addClass("lineno"))
-														.append($("<td></td").text(lines1[j - 1]).addClass("mismatch"))
+														.append($("<td></td").text(lines1[j - 1]).addClass("mismatch line-content"))
 														.appendTo(tableRight);
 					j++;
 				}
@@ -221,29 +221,29 @@
 					}
 					while (m <= n) {
 						$("<tr></tr>").append($("<td></td").addClass("lineno"))
-														.append($("<td></td").addClass("mismatch"))
+														.append($("<td></td").addClass("mismatch line-content"))
 														.appendTo(table);
 						m++;
 					}
 				}
 				$("<tr></tr>").append($("<td></td").text(i).addClass("lineno"))
-														.append($("<td></td").text(lines0[i - 1]).addClass("match"))
+														.append($("<td></td").text(lines0[i - 1]).addClass("match line-content"))
 														.appendTo(tableLeft);
 				++i;
 				$("<tr></tr>").append($("<td></td").text(j).addClass("lineno"))
-														.append($("<td></td").text(lines1[j - 1]).addClass("match"))
+														.append($("<td></td").text(lines1[j - 1]).addClass("match line-content"))
 														.appendTo(tableRight);
 				++j;
 			});
 			while (i <= lines0.length) {
 				$("<tr></tr>").append($("<td></td").text(i).addClass("lineno"))
-														.append($("<td></td").text(lines0[i - 1]).addClass("mismatch"))
+														.append($("<td></td").text(lines0[i - 1]).addClass("mismatch line-content"))
 														.appendTo(tableLeft);
 				i++;
 			}
 			while (j <= lines1.length) { 
 				$("<tr></tr>").append($("<td></td").text(j).addClass("lineno"))
-														.append($("<td></td").text(lines1[j - 1]).addClass("mismatch"))
+														.append($("<td></td").text(lines1[j - 1]).addClass("mismatch line-content"))
 														.appendTo(tableRight);
 				j++;
 			}

@@ -1,3 +1,6 @@
+body {
+	background-color:#EBF0D6;
+}
 #content {
 	position: relative;
 }
@@ -13,6 +16,7 @@
 	width:90%;
 }
 .file-content-wrapper {
+	border: 2px inset #EFEFEF;
 	width: 50%;
 	display:table-cell;
 	overflow:hidden;
@@ -26,6 +30,11 @@
 	position:relative;
 	right:0;
 	bottom:0;
+}
+.file-name {
+	border-bottom:1px solid #B2BC8A;
+	font-style:italic;
+	font-weight:bold;
 }
 #tool {
 	display:table-cell;

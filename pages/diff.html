@@ -24,6 +24,8 @@
 			$(function() {
 				var util = window.util;
 				var fileIO = util.fileIO;
+				var left =$(".file-content-wrapper.left");
+				var right =$(".file-content-wrapper.right");
 				$("#btnDiff").click(function() {
 					var files = $(".select-file > input[type=file]").get()[0].files;
 					if (files.length != 2) {
@@ -43,6 +45,7 @@
 					}
 					var done = 0;
 					var lines = [];
+					var fileNames = [];
 					fileIO.onPostRead = function() {
 						var len = arguments.length;
 						if (len == 2) {
@@ -52,14 +55,21 @@
 							lines.push(arguments[0].split(/[\r\n]+/));
 							done++;
 							if (done == 2) {
+								left.html("");
+								right.html("");
 								var commons = util.Diff(lines[0], lines[1]);
 								var result = util.GenerateComparison(lines[0], lines[1], commons);
-								$(".file-content-wrapper.left").append(result[0]);
-								$(".file-content-wrapper.right").append(result[1]);
+								left.append(result[0]);
+								right.append(result[1]);
+								$("<td/>").text(fileNames[0]).attr("colspan", "2").addClass("file-name")
+									.appendTo($("<tr/>")).prependTo($("table", left));
+								$("<td/>").text(fileNames[1]).attr("colspan", "2").addClass("file-name")
+								.appendTo($("<tr/>")).prependTo($("table", right));
 							}
 						}
 					};
 					$.each(files, function(index, file) {
+						fileNames.push(file.name);
 						window.util.fileIO.Read(file);
 					});
 				});

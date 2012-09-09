@@ -5,12 +5,15 @@
 }
 .file-content {
 	white-space: nowrap;
+	width:100%;
 }
 .mismatch {
 	background:#e3cc85;
 	height:1.5em;
 }
-
+.line-content {
+	width:100%;
+}
 .match {
 	
 }
