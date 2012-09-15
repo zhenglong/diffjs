@@ -1,0 +1,44 @@
+.lineno {
+	background:#909090;
+	border-right:1px solid black;
+	text-align:right;
+}
+.file-content {
+	white-space: nowrap;
+	width:100%;
+}
+.mismatch {
+	background:#e3cc85;
+	height:1.5em;
+}
+.line-content {
+	width:100%;
+}
+.match {
+	
+}
+.left {
+	position:relative;
+	left:0;
+	top:0;
+}
+.right {
+	position:relative;
+	right:0;
+	bottom:0;
+}
+.file-name {
+	border-bottom:1px solid #B2BC8A;
+	font-style:italic;
+	font-weight:bold;
+}
+#tool {
+	display:table-cell;
+	width:25px;
+}
+.file-content-wrapper {
+	border: 2px inset #EFEFEF;
+	width: 50%;
+	display:table-cell;
+	overflow:hidden;
+}

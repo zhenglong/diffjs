@@ -15,28 +15,7 @@ body {
 	background:#e0e0e0;
 	width:90%;
 }
-.file-content-wrapper {
-	border: 2px inset #EFEFEF;
-	width: 50%;
-	display:table-cell;
-	overflow:hidden;
-}
-.left {
-	position:relative;
-	left:0;
-	top:0;
-}
-.right {
-	position:relative;
-	right:0;
-	bottom:0;
-}
-.file-name {
-	border-bottom:1px solid #B2BC8A;
+footer > p {
+	font-size:10px;
 	font-style:italic;
-	font-weight:bold;
-}
-#tool {
-	display:table-cell;
-	width:25px;
 }

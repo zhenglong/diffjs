@@ -18,21 +18,21 @@
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<script type="text/javascript" src="../js/vendor/jquery-1.7.2.js"></script>
 		<script type="text/javascript" src="../js/diff.js"></script>
-		<link rel="stylesheet" type="text/css" href="../css/diff.css" /> 
+		<script type="text/javascript" src="../js/vendor/jquery.ui.widget.js"></script>
+		<script type="text/javascript" src="../js/diff.widget.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/diff.widget.css" /> 
 		<link rel="stylesheet" type="text/css" href="../css/main.css" />
 		<script>
 			$(function() {
-				var util = window.util;
-				var fileIO = util.fileIO;
-				var left =$(".file-content-wrapper.left");
-				var right =$(".file-content-wrapper.right");
+				var util = window.util,
+							fileIO = util.fileIO,
+							msg = "", maxSize = 1024*1024*1024;
 				$("#btnDiff").click(function() {
 					var files = $(".select-file > input[type=file]").get()[0].files;
 					if (files.length != 2) {
 						window.alert("You should choose 2 files to compare them!");
 						return;
 					}
-					var msg = "", maxSize = 1024*1024*1024;
 					if (files[0].size > maxSize) {
 						msg = msg + files[0].name;
 					}
@@ -55,16 +55,11 @@
 							lines.push(arguments[0].split(/[\r\n]+/));
 							done++;
 							if (done == 2) {
-								left.html("");
-								right.html("");
 								var commons = util.Diff(lines[0], lines[1]);
-								var result = util.GenerateComparison(lines[0], lines[1], commons);
-								left.append(result[0]);
-								right.append(result[1]);
-								$("<td/>").text(fileNames[0]).attr("colspan", "2").addClass("file-name")
-									.appendTo($("<tr/>")).prependTo($("table", left));
-								$("<td/>").text(fileNames[1]).attr("colspan", "2").addClass("file-name")
-								.appendTo($("<tr/>")).prependTo($("table", right));
+								$(".comparison-result").diff("refresh", {
+									files:[{name:fileNames[0],lines: lines[0]}, {name:fileNames[1],lines: lines[1]}],
+									commonLines:commons
+								});
 							}
 						}
 					};
@@ -72,6 +67,7 @@
 						fileNames.push(file.name);
 						window.util.fileIO.Read(file);
 					});
+					$(".comparison-result").diff();
 				});
 			});
 		</script>
@@ -88,15 +84,10 @@
 					<input type="button" id="btnDiff" value="Diff" />
 				</div>
 				<div class="comparison-result">
-					<div class="file-content-wrapper left"></div>
-					<div id="tool"></div>
-					<div class="file-content-wrapper right"></div>
 				</div>
 			</div>
 			<footer>
-				<p>
-					&copy; Copyright  by tristan
-				</p>
+				<p>Designed by Tristan</p>
 			</footer>
 		</div>
 	</body>
