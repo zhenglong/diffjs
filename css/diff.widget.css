@@ -11,11 +11,19 @@
 	background:#e3cc85;
 	height:1.5em;
 }
+.mismatch-highlight {
+	background:#9CE385;
+	font-weight:bold;
+}
 .line-content {
 	width:100%;
+	cursor:pointer;
 }
 .match {
 	
+}
+.match-highlight {
+	font-weight:bold;
 }
 .left {
 	position:relative;
@@ -41,4 +49,11 @@
 	width: 50%;
 	display:table-cell;
 	overflow:hidden;
+}
+.comparison-result {
+	display:table;
+	table-layout:fixed;
+	position:relative;
+	background:#e0e0e0;
+	width:100%;
 }

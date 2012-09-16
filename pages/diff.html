@@ -20,7 +20,10 @@
 		<script type="text/javascript" src="../js/diff.js"></script>
 		<script type="text/javascript" src="../js/vendor/jquery.ui.widget.js"></script>
 		<script type="text/javascript" src="../js/diff.widget.js"></script>
+		<script type="text/javascript" src="../js/vendor/jquery.transit.js"></script>
 		<link rel="stylesheet" type="text/css" href="../css/diff.widget.css" /> 
+		<link rel="stylesheet" type="text/css" href="../css/vendor/main.css" />
+		<link rel="stylesheet" type="text/css" href="../css/vendor/normalize.css" />
 		<link rel="stylesheet" type="text/css" href="../css/main.css" />
 		<script>
 			$(function() {
@@ -56,7 +59,7 @@
 							done++;
 							if (done == 2) {
 								var commons = util.Diff(lines[0], lines[1]);
-								$(".comparison-result").diff("refresh", {
+								$("#comparison").diff("refresh", {
 									files:[{name:fileNames[0],lines: lines[0]}, {name:fileNames[1],lines: lines[1]}],
 									commonLines:commons
 								});
@@ -67,7 +70,21 @@
 						fileNames.push(file.name);
 						window.util.fileIO.Read(file);
 					});
-					$(".comparison-result").diff();
+				});
+				$("#comparison").diff();
+				var config = $("#config");
+				var width = config.width();
+				config.css("right", (-1)*width + "px");
+				$("#config > h3").mouseover(function() {
+					if (config.data("isCollapsed") === true) {
+						config.data("isCollapsed", false);
+						$(this).transition({rotate:"0deg"});
+						config.animate({"right":"0px", "height":"100px"});
+					} else {
+						config.data("isCollapsed", true);
+						$(this).transition({rotate:"90deg"});
+						config.animate({"right":((-1)*width) + "px", "height":width + "px"});
+					}
 				});
 			});
 		</script>
@@ -83,8 +100,13 @@
 					<input type="file" value="File" multiple required="true" id="files" />
 					<input type="button" id="btnDiff" value="Diff" />
 				</div>
-				<div class="comparison-result">
+				<div id="comparison">
 				</div>
+				<section id="config" data-is-collapsed="true">
+					<h3>Hot Key Configuration</h3>
+					<p>SHIFT+N - next difference</p>
+					<p>SHIFT+P - previous difference</p>
+				</section>
 			</div>
 			<footer>
 				<p>Designed by Tristan</p>

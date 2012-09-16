@@ -7,15 +7,36 @@ body {
 .select-file {
 	
 }
-.comparison-result {
-	display:table;
-	table-layout:fixed;
-	position:relative;
-	overflow: scroll;
-	background:#e0e0e0;
-	width:90%;
-}
+
 footer > p {
-	font-size:10px;
+	font-size:0.5em;
 	font-style:italic;
+}
+
+#comparison {	
+	width:90%;
+	max-height: 480px;
+	overflow-x:hidden;
+}
+#config {
+	position: fixed;
+	top:30%;
+	right:-239px;
+	border:1px solid #909090;
+	background:rgba(219, 214, 240, 0.5);
+	box-shadow: 0px 0px 3px #808080; 
+	padding: 0 0 0 1.5em;
+	height:239px;
+}
+#config > h3 {
+	-moz-transform-origin:top left;
+	-webkit-transform-origin:top left;
+	-moz-transform:rotate(90deg);
+	-webkit-transform:rotate(90deg);
+	padding:0px;
+	margin:0px;
+}
+#config > p {
+	padding:0px;
+	margin:0px;
 }
