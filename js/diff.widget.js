@@ -92,7 +92,8 @@
 			var self = this;
 			this.element.on("click", ".line-content", function() {
 				self.element.focus();
-			});
+			}).on("click", ".line-content.mismatch", $.proxy(this._onMismatchedRowClick, this))
+			.on("dblclick", ".line-content.mismatch", $.proxy(this._onMismatchedRowDblClick, this));
 		},
 		_onKeyPress: function(e) {
 			switch(e.which) {
@@ -133,6 +134,17 @@
 				case 38: // previous line
 				break;
 			}
+		},
+		_notify: null,
+		_onMismatchedRowClick: function(e) {
+			if (this._notify == null)
+				this._notify = $.pnotify({ title:"line detail", text: $(e.currentTarget).html(), sticker:false,
+				history:false, icon:false, type:"info", stack:false,animate_speed:"fast",
+				hide:false, title_escape:true });
+			this._notify.pnotify({ text: $(e.currentTarget).html() });
+		},
+		_onMismatchedRowDblClick: function(e) {
+			
 		}
 	});
 })(jQuery, window);
