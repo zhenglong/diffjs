@@ -57,3 +57,19 @@
 	background:#e0e0e0;
 	width:100%;
 }
+
+.ui-pnotify-container-custom {
+	background-color:#DEF0D6;
+	font-size:0.7em;
+	font-weight:bold;
+}
+
+.ui-pnotify-container-custom ins {
+	color: #374E0C;
+	background-color: #E0F2BE;
+}
+
+.ui-pnotify-container-custom del {
+	color:#550000;
+	background-color: #FFCACA;
+}

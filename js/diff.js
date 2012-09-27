@@ -181,6 +181,74 @@
 		ExcludeJackpot();
 		return outputCandidates;// return output;
 	};
+	util.DiffString = function(str0, str1) {
+		var m = str0.length, n = str1.length;
+		var k0 = [], k1 = [], LE = [], LT=[];
+		function copyArr(from, to) {
+			for(var prop in from) to[prop] = from[prop];
+		}
+		function forwards(s0, e0, s1, e1) {
+			var i, j, k;
+			for (i = 0, len = e1 - s1 + 1; i <=len; i++) k1[i] = 0;
+			for (i = s0; i <= e0; i++ ) {
+				copyArr(k1, k0);
+				for (j = s1, k = 0; j <= e1; j++, k++) {
+					k1[k + 1] = (str1[j] == str0[i]) ? k0[k] + 1 : Math.max(k1[k], k0[k + 1]);
+				}
+			}
+			copyArr(k1, LE);
+		}
+		function backwards(s0, e0, s1, e1) {
+			var i, j;
+			for (i = 0, len = e1 - s1 + 1; i <= len; i++) k1[i] = 0;
+			for (i = e0; i >= s0; i-- ) {
+				copyArr(k1, k0);
+				for (j = e1, k = 0; j >= s1; j--, k++) {
+					k1[k + 1] = (str1[j] == str0[i]) ? k0[k] + 1 : Math.max(k1[k], k0[k + 1]);
+				}
+			}
+			copyArr(k1, LT);
+		}
+		function diff(s0, e0, s1, e1) {
+			var k;
+			if (e0 == s0) {
+				for (k = s1; k <= e1; k++) {
+					if (str1[k] == str0[s0]) break;
+				}
+				if (k <= e1) {
+					var l = str1.slice(s1, k), r = str1.slice(k + 1, e1 + 1);
+					return ((l == "" ? "" : "<ins>" + l + "</ins>") + str0[s0] + 
+						(r == "" ? "" : "<ins>" + r + "</ins>"));
+				} else {
+					return ("<del>" + str0[s0] + "</del><ins>" + str1.slice(s1, e1+1) + "</ins>");
+				}
+			} else if (s1 == e1) {
+				for (k = s0; k <= e0; k++) {
+					if (str0[k] == str1[s1]) break;
+				}
+				if (k <= e0) {
+					var l = str0.slice(s0, k), r = str0.slice(k + 1, e0 + 1);
+					return ((l == "" ? "" : "<del>" + l + "</del>") + str1[s1] + 
+						(r == "" ? "" : "<del>" + r + "</del>"));
+				} else {
+					return ("<del>" + str0.slice(s0, e0+1) + "</del><ins>" + str1[s1] + "</ins>");
+				}
+			}
+			var mid = Math.floor((s0 + e0) / 2);
+			forwards(s0, mid, s1, e1);
+			backwards(mid + 1, e0, s1, e1);
+			var L = 0;
+			var minK = s1;
+			for (k = s1; k <= e1; k++) {
+				if (L < (LE[k] + LT[e1 - k])) {
+					L = (LE[k] + LT[e1 - k]);
+					minK = k;
+				}
+			}
+			return diff(s0, mid, s1, minK) + diff(mid + 1, e0, minK + 1, e1); 
+		}
+		return diff(0, m-1, 0, n-1);
+	};
 })(window);
 
 /*

@@ -70,6 +70,15 @@
 			while (i <= lines0.length) this._makeMismatch(i, lines0[(i++) - 1], tableLeft);
 			while (j <= lines1.length) this._makeMismatch(j, lines0[(j++) - 1], tableRight);
 
+			i = 0;
+			tableLeft.find("tr").each(function() {
+				$(this).data("index", ++i);
+			});
+			i = 0;
+			tableRight.find("tr").each(function() {
+				$(this).data("index", ++i);
+			})
+
 			var wrapper = $("<div></div>").addClass("comparison-result");
 			$("<div></div>").addClass("file-content-wrapper left")
 				.append(tableLeft).appendTo(wrapper);
@@ -137,11 +146,18 @@
 		},
 		_notify: null,
 		_onMismatchedRowClick: function(e) {
-			if (this._notify == null)
-				this._notify = $.pnotify({ title:"line detail", text: $(e.currentTarget).html(), sticker:false,
+				var $this = $(e.currentTarget);
+				var index = $this.parent("tr").data("index");
+				var texts = [];
+				$("tr:nth-child(" + index + ")", $(this.element))
+					.children("td:not(.lineno)")
+					.each(function() { texts.push($(this).text()); });
+			if (this._notify == null) {
+				this._notify = $.pnotify({ title:"line detail", text: window.util.DiffString(texts[0], texts[1]), sticker:false,
 				history:false, icon:false, type:"info", stack:false,animate_speed:"fast",
-				hide:false, title_escape:true });
-			this._notify.pnotify({ text: $(e.currentTarget).html() });
+				hide:false, title_escape:true, addclass: "ui-pnotify-container-custom" });
+			}
+			this._notify.pnotify({ text: window.util.DiffString(texts[0], texts[1]) });
 		},
 		_onMismatchedRowDblClick: function(e) {
 			
