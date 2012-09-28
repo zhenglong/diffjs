@@ -217,10 +217,12 @@
 				}
 				if (k <= e1) {
 					var l = str1.slice(s1, k), r = str1.slice(k + 1, e1 + 1);
-					return ((l == "" ? "" : "<ins>" + l + "</ins>") + str0[s0] + 
-						(r == "" ? "" : "<ins>" + r + "</ins>"));
+					return ((l == "" ? "" : "<ins>" + util.Escape(l) + "</ins>") + 
+						(s0 < str0.length ? util.Escape(str0[s0]) : "") + 
+						(r == "" ? "" : "<ins>" + util.Escape(r) + "</ins>"));
 				} else {
-					return ("<del>" + str0[s0] + "</del><ins>" + str1.slice(s1, e1+1) + "</ins>");
+					return ((s0 < str0.length ? ("<del>" + util.Escape(str0[s0]) + "</del>") : "") + 
+						((s1 < (e1+1)) ? ("<ins>" + util.Escape(str1.slice(s1, e1+1)) + "</ins>") : ""));
 				}
 			} else if (s1 == e1) {
 				for (k = s0; k <= e0; k++) {
@@ -228,10 +230,12 @@
 				}
 				if (k <= e0) {
 					var l = str0.slice(s0, k), r = str0.slice(k + 1, e0 + 1);
-					return ((l == "" ? "" : "<del>" + l + "</del>") + str1[s1] + 
-						(r == "" ? "" : "<del>" + r + "</del>"));
+					return ((l == "" ? "" : "<del>" + util.Escape(l) + "</del>") + 
+						(s1 < str1.length ? util.Escape(str1[s1]) : "") + 
+						(r == "" ? "" : "<del>" + util.Escape(r) + "</del>"));
 				} else {
-					return ("<del>" + str0.slice(s0, e0+1) + "</del><ins>" + str1[s1] + "</ins>");
+					return (((s0 < (e0+1)) ? ("<del>" + util.Escape(str0.slice(s0, e0+1)) + "</del>") : "") +
+						(s1 < str1.length ? ("<ins>" + util.Escape(str1[s1]) + "</ins>") : ""));
 				}
 			}
 			var mid = Math.floor((s0 + e0) / 2);
@@ -239,10 +243,10 @@
 			backwards(mid + 1, e0, s1, e1);
 			var L = 0;
 			var minK = s1;
-			for (k = s1; k <= e1; k++) {
-				if (L < (LE[k] + LT[e1 - k])) {
-					L = (LE[k] + LT[e1 - k]);
-					minK = k;
+			for (k = 1, len = e1 - s1 + 1; k <= len; k++) {
+				if (L < (LE[k] + LT[len - k])) {
+					L = (LE[k] + LT[len - k]);
+					minK = k + s1 - 1;
 				}
 			}
 			return diff(s0, mid, s1, minK) + diff(mid + 1, e0, minK + 1, e1); 
@@ -267,6 +271,9 @@
 		}
 		return formatter;
 	};
+	util.Escape = function(str) {
+		return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	}
 })(window);
 
 /*

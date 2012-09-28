@@ -118,10 +118,10 @@ test("Diff-long-2-reverse", function() {
 
 test("DiffString", function() {
 	var result = window.util.DiffString("12345", "135");
-	equal(result, "1<del>2</del>3<del>4</del>5", "failed for basical test of DiffString");
+	equal(result, "1<del>2</del>3<del>4</del>5", "basical test of DiffString: 12345 and 135");
 });
 
 test("DiffString", function() {
 	var result = window.util.DiffString("1234578", "ab1365");
-	equal(result, "<ins>ab></ins>i<del>2</del>3<del>4</del><ins>6</ins>5<del>78</del>", "failed for 1234578 and ab1365 test of DiffString");
+	equal(result, "<ins>ab</ins>1<del>2</del>3<del>4</del><ins>6</ins>5<del>7</del><del>8</del>", "test of DiffString: 1234578 and ab1365");
 });

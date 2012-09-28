@@ -152,12 +152,13 @@
 				$("tr:nth-child(" + index + ")", $(this.element))
 					.children("td:not(.lineno)")
 					.each(function() { texts.push($(this).text()); });
+				var result = window.util.DiffString(texts[0], texts[1]);
 			if (this._notify == null) {
-				this._notify = $.pnotify({ title:"line detail", text: window.util.DiffString(texts[0], texts[1]), sticker:false,
+				this._notify = $.pnotify({ title:"detail:<hr/>", text: result, sticker:false,
 				history:false, icon:false, type:"info", stack:false,animate_speed:"fast",
-				hide:false, title_escape:true, addclass: "ui-pnotify-container-custom" });
+				hide:false, addclass: "ui-pnotify-container-custom" });
 			}
-			this._notify.pnotify({ text: window.util.DiffString(texts[0], texts[1]) });
+			this._notify.pnotify({ text: result });
 		},
 		_onMismatchedRowDblClick: function(e) {
 			
