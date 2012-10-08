@@ -58,7 +58,7 @@
 							window.alert("Failed to open file: " + arguments[1].name);
 							return;
 						} else {
-							lines.push(arguments[0].split(/[\r\n]+/));
+							lines.push(arguments[0].split(/\r\n|\n|\r/));
 							done++;
 							if (done == 2) {
 								var commons = util.Diff(lines[0], lines[1]);

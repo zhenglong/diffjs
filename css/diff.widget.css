@@ -3,6 +3,12 @@
 	border-right:1px solid black;
 	text-align:right;
 }
+td {
+	padding:0;
+}
+tr{
+	border-bottom: 1px solid #a0a0a0;
+}
 .file-content {
 	white-space: nowrap;
 	width:100%;

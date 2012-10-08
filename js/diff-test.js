@@ -116,6 +116,17 @@ test("Diff-long-2-reverse", function() {
 	deepEqual(output, ["test(\"Diff-basic\", function() {", "var output = window.util.Diff(lines0, lines1);"]);
 });
 
+test("Diff-sample", function() {
+	var lines0 = ["a", "b", "c", "a", "b", "b", "a"],
+	lines1 = ["c", "b", "a", "b", "a", "c"];
+	var output=[];
+	$.each(window.util.Diff(lines0, lines1), function(index, candidate) {
+		if (candidate.a > 0 && candidate.a <= lines0.length) 
+			output.push(lines0[candidate.a - 1]);
+	});
+	deepEqual(output, ["c", "a", "b", "a"]);
+});
+
 test("DiffString", function() {
 	var result = window.util.DiffString("12345", "135");
 	equal(result, "1<del>2</del>3<del>4</del>5", "basical test of DiffString: 12345 and 135");
@@ -124,4 +135,10 @@ test("DiffString", function() {
 test("DiffString", function() {
 	var result = window.util.DiffString("1234578", "ab1365");
 	equal(result, "<ins>ab</ins>1<del>2</del>3<del>4</del><ins>6</ins>5<del>7</del><del>8</del>", "test of DiffString: 1234578 and ab1365");
+});
+
+test("hsvToRgb", function() {
+	var vec = window.util.hsvToRgb(0.011111111, 0.2, 0.9);
+	var result = window.util.rgbVectorToWebColor(vec);
+	equal(result, "#e6bbb8", "0.011111111 0.2 0.9 => #e6bbb8");
 });

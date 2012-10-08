@@ -68,7 +68,7 @@
 				next++;
 			});
 			while (i <= lines0.length) this._makeMismatch(i, lines0[(i++) - 1], tableLeft);
-			while (j <= lines1.length) this._makeMismatch(j, lines0[(j++) - 1], tableRight);
+			while (j <= lines1.length) this._makeMismatch(j, lines1[(j++) - 1], tableRight);
 
 			i = 0;
 			tableLeft.find("tr").each(function() {
