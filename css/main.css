@@ -11,6 +11,12 @@ body {
 	border-radius:5px;
 	box-shadow: 0px 0px 30px #B7DEA5;
 }
+
+#comparison {
+	margin:15px auto 0;
+	outline:none;
+}
+
 .select-file {
 	
 }
@@ -24,16 +30,6 @@ footer > p {
 	font-style:italic;
 }
 
-#comparison {	
-	width:90%;
-	max-height: 450px;
-	overflow-x:hidden;
-	margin:15px auto 0;
-}
-#comparison:focus {
-	box-shadow: 0px 0px 15px #6d6464;
-	outline:none;
-}
 #config {
 	position: fixed;
 	top:30%;
@@ -45,9 +41,9 @@ footer > p {
 	height:239px;
 }
 #config > h3 {
-	-moz-transform-origin:top left;
+	transform-origin:top left;
 	-webkit-transform-origin:top left;
-	-moz-transform:rotate(90deg);
+	transform:rotate(90deg);
 	-webkit-transform:rotate(90deg);
 	padding:0px;
 	margin:0px;

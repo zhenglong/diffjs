@@ -15,6 +15,8 @@
 		},
 		_makeMismatch: function(lineno, line, tableElement) {
 			this._makeLine("mismatch line-content", line, tableElement, lineno);
+			var length = tableElement.find(".line-content").length;
+			if (this._mismatches.indexOf(length) == -1) 	this._mismatches.push(length);
 		},
 		_makeMatch: function(lineno, line, tableElement) {
 			this._makeLine("match line-content", line, tableElement, lineno);
@@ -27,6 +29,7 @@
 		_initVariables: function() {
 			this._curNo = -1;
 			this._diffs = [];
+			this._mismatches = [];
 		},
 		refresh: (function(data) {
 			this.element.html("");
@@ -85,22 +88,39 @@
 			$("<div id='tool'></div>").appendTo(wrapper);
 			$("<div></div>").addClass("file-content-wrapper right")
 				.append(tableRight).appendTo(wrapper);
-			wrapper.appendTo(this.element);
+			this.element.append($("<div id='mismatch-indicator'></div>"));
+			$("<div id='comparison-wrapper'></div>").append(wrapper).appendTo(this.element);
+			
+			var intervalId = setInterval(function () {
+				var width = $("#mismatch-indicator").width();
+				var height = $("#comparison-wrapper").height();
+				if (height <= 0) return;
+				var r = Raphael("mismatch-indicator", width, height);
+				var totalLines = tableLeft.find(".line-content").length;
+				height = Math.min(totalLines, height);
+				$.each(self._mismatches, function(i, lineNo) {
+					r.path(window.util.Format("M0 {0}L{1} {0}", 
+						Math.floor((lineNo / totalLines) * height), width))
+						.attr({"stroke":"red", "stroke-width":"1"});
+				});
+				clearInterval(intervalId);
+				intervalId = 0;
+			}, 30);
 			if (this._diffs.length > 0) {
 				this._curNo = 0;
 				$("tr", tableLeft).slice(this._diffs[this._curNo].start, this._diffs[this._curNo].end)
 					.find("td:not(.lineno)").addClass("mismatch-highlight");
 				$("tr", tableRight).slice(this._diffs[this._curNo].start, this._diffs[this._curNo].end)
 					.find("td:not(.lineno)").addClass("mismatch-highlight");
-				this.element.scrollTop($($("tr", tableLeft)
-					.find("tr")[this._diffs[this._curNo].start + 1]).position().top-20);
+				this.element.scrollTop($(tableLeft.find("tr")[this._diffs[this._curNo].start + 1]).position().top-20);
 			}
 		}),
 		_bindEvents: function() {
 			this.element.on("keypress", $.proxy(this._onKeyPress, this));
 			var self = this;
-			this.element.on("click", ".line-content", function() {
-				self.element.focus();
+			this.element.on("click", ".line-content", function(event) {
+				$("#comparison-wrapper").focus();
+				event.stopPropagation();
 			}).on("click", ".line-content.mismatch", $.proxy(this._onMismatchedRowClick, this))
 			.on("dblclick", ".line-content.mismatch", $.proxy(this._onMismatchedRowDblClick, this));
 		},

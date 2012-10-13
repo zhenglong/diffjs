@@ -64,6 +64,27 @@ tr{
 	width:100%;
 }
 
+#comparison-wrapper {
+	margin-left:25px;
+	width:90%;
+	max-height: 450px;
+	overflow-x:hidden;
+}
+
+#comparison-wrapper:focus {
+	box-shadow: 0px 0px 15px #6d6464;
+	outline:none;
+}
+
+#mismatch-indicator {
+	float:left;
+	width:22px;
+	height:100%;
+}
+#mismatch-indicator:after {
+	clear:both;
+}
+
 .ui-pnotify-container-custom {
 	background-color:#DEF0D6;
 	font-size:0.7em;

@@ -279,10 +279,10 @@
 	util.Format = function(formatter, args) {
 		var t = $.type(args);
 		if (t != "object" && t != "array") {
-			args = argument.shift();
+			args = Array.prototype.slice.call(arguments, 1);
 		}
 		for(var key in args) {
-			formatter = formatter.replace(new RegExp("{" + key + "}", "g"), args[key]);
+			formatter = formatter.replace(new RegExp("\\{" + key + "\\}", "g"), args[key]);
 		}
 		return formatter;
 	};

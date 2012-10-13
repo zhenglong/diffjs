@@ -137,6 +137,11 @@ test("DiffString", function() {
 	equal(result, "<ins>ab</ins>1<del>2</del>3<del>4</del><ins>6</ins>5<del>7</del><del>8</del>", "test of DiffString: 1234578 and ab1365");
 });
 
+test("Format", function() {
+	var result = window.util.Format("hello {0}, {1} {0} {1}!", "world", "kitty");
+	equal(result, "hello world, kitty world kitty!");
+})
+
 test("hsvToRgb", function() {
 	var vec = window.util.hsvToRgb(0.011111111, 0.2, 0.9);
 	var result = window.util.rgbVectorToWebColor(vec);
