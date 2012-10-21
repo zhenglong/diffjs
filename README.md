@@ -5,4 +5,4 @@ file comparison implemented with javascript
 
 Works in latest FF/Chrome
 
-See more in <a src="https://github.com/zhenglong/diffjs/wiki">Wiki</a>
+See more in [wiki]("https://github.com/zhenglong/diffjs/wiki").
