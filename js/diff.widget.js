@@ -13,74 +13,62 @@
 			$("<td/>").text(name).attr("colspan", "2").addClass("file-name")
 				.appendTo($("<tr/>")).appendTo(tableElement);
 		},
-		_makeMismatch: function(lineno, line, tableElement) {
-			this._makeLine("mismatch line-content", line, tableElement, lineno);
-			var length = tableElement.find(".line-content").length;
-			if (this._mismatches.indexOf(length) == -1) 	this._mismatches.push(length);
+		_makeMismatch: function(lineno, line, data, tableElement) {
+			this._makeLine("mismatch line-content", line, data, tableElement, lineno);
 		},
-		_makeMatch: function(lineno, line, tableElement) {
-			this._makeLine("match line-content", line, tableElement, lineno);
+		_makeMatch: function(lineno, line, data, tableElement) {
+			this._makeLine("match line-content", line, data, tableElement, lineno);
 		},
-		_makeLine: function(classes, line, tableElement, lineno) {
+		_makeLine: function(classes, line, data, tableElement, lineno) {
 			$("<tr></tr>").append($("<td></td").text(lineno || "").addClass("lineno"))
 													.append($("<td></td").text(line).addClass(classes))
+													.data("index", data)
 													.appendTo(tableElement);
 		},
 		_initVariables: function() {
 			this._curNo = -1;
 			this._diffs = [];
-			this._mismatches = [];
+			this._tableWrapper = null;
+			this.leftData = null;
+			this.rightData = null;
 		},
 		refresh: (function(data) {
 			this.element.html("");
 			this._initVariables();
+			this.leftData = data.files[0].lines;
+			this.rightData = data.files[1].lines;
 			var prev, next = 1,
 						lines0 = data.files[0].lines,
 						lines1 = data.files[1].lines;
 						tableLeft = $("<table></table>").addClass("file-content"),
 						tableRight = $("<table></table>").addClass("file-content"),
-						i = 1, j = 1, leftFillings = 0, rightFillings = 0;
+						i = j = realI = realJ = backup = 1;
 			this._makeHead(data.files[0].name || "", tableLeft);
 			this._makeHead(data.files[1].name || "", tableRight);
 			var self = this;
+			data.commonLines.push({a:lines0.length+1, b:lines1.length+1});
 			$.each(data.commonLines, function(index, common) {
-				if ((common.a < 1 && common.a > lines0.length) || 
-					(common.b < 1 && common.b > lines1.length)) return;
-				var mismatched = (i < common.a) || (j < common.b);
-				mismatched && (prev = next);
-				while (i < common.a) self._makeMismatch(i, lines0[(i++) - 1], tableLeft);
-				while (j < common.b) self._makeMismatch(j, lines1[(j++) - 1], tableRight);
-
-				var newI = (i + leftFillings), newJ = j + rightFillings;
-				if (mismatched) {next = Math.max(newI, newJ); self._diffs.push({start:prev-1, end:next-1}); }
-				if (newI != newJ) {
-					var m = Math.min(newI, newJ) + 1, n = next, table, lines;
-					if (newI < newJ) {
-						table = tableLeft;
-						lines = lines0;
-						leftFillings = leftFillings + n - m + 1;
-					} else {
-						table = tableRight;
-						lines = lines1;
-						rightFillings = rightFillings + n - m + 1;
-					}
-					while (m <= n) { self._makeMismatch("", "", table); m++; }
+				backup = realI;
+				while ((i <= lines0.length && i < common.a) && 
+					(j <= lines1.length && j < common.b)) { 
+					self._makeMismatch(i, lines0[i - 1], j-1, tableLeft); realI++;
+					self._makeMismatch(j, lines1[(j++) - 1], (i++)-1, tableRight); realJ++;
+				}				
+				while (i <= lines0.length && i < common.a) {
+					self._makeMismatch(i, lines0[i - 1], null, tableLeft); realI++;
+					self._makeMismatch("", "", (i++) - 1, tableRight); realJ++;
 				}
-				self._makeMatch(i, lines0[(i++) - 1], tableLeft);
-				self._makeMatch(j, lines1[(j++) - 1], tableRight);
-				next++;
+				while (j <= lines1.length && j < common.b) {
+					self._makeMismatch("", "", j - 1, tableLeft); realI++;
+					self._makeMismatch(j, lines1[(j++) - 1], null, tableRight); realJ++;
+				}
+				if (realI != realJ) throw "invalid operation";
+				if (backup != realI) self._diffs.push({start: backup - 1, end: realI - 1});
+				if (i <= lines0.length) self._makeMatch(i, lines0[(i++)-1], realI, tableLeft);
+				if (j <= lines1.length) self._makeMatch(j, lines1[(j++)-1], realJ, tableRight);
+				realI++;
+				realJ++;
 			});
-			while (i <= lines0.length) this._makeMismatch(i, lines0[(i++) - 1], tableLeft);
-			while (j <= lines1.length) this._makeMismatch(j, lines1[(j++) - 1], tableRight);
-
-			i = 0;
-			tableLeft.find("tr").each(function() {
-				$(this).data("index", ++i);
-			});
-			i = 0;
-			tableRight.find("tr").each(function() {
-				$(this).data("index", ++i);
-			})
 
 			var wrapper = $("<div></div>").addClass("comparison-result");
 			$("<div></div>").addClass("file-content-wrapper left")
@@ -98,21 +86,25 @@
 				var r = Raphael("mismatch-indicator", width, height);
 				var totalLines = tableLeft.find(".line-content").length;
 				height = Math.min(totalLines, height);
-				$.each(self._mismatches, function(i, lineNo) {
+				$.each(self._diffs, function(i, _diff) {
 					r.path(window.util.Format("M0 {0}L{1} {0}", 
-						Math.floor((lineNo / totalLines) * height), width))
-						.attr({"stroke":"red", "stroke-width":"1"});
+						Math.min(Math.ceil((_diff.start / totalLines) * height), height), width))
+						.attr({
+							"stroke":"red", 
+							"stroke-width":"" + Math.min(Math.ceil(((_diff.end - _diff.start + 1) / totalLines) * height, height))
+						});
 				});
 				clearInterval(intervalId);
 				intervalId = 0;
 			}, 30);
 			if (this._diffs.length > 0) {
 				this._curNo = 0;
+				this.tableWrapper = $("#comparison-wrapper");
 				$("tr", tableLeft).slice(this._diffs[this._curNo].start, this._diffs[this._curNo].end)
 					.find("td:not(.lineno)").addClass("mismatch-highlight");
 				$("tr", tableRight).slice(this._diffs[this._curNo].start, this._diffs[this._curNo].end)
 					.find("td:not(.lineno)").addClass("mismatch-highlight");
-				this.element.scrollTop($(tableLeft.find("tr")[this._diffs[this._curNo].start + 1]).position().top-20);
+				this.tableWrapper.scrollTop($(tableLeft.find("tr")[this._diffs[this._curNo].start + 1]).position().top-20);
 			}
 		}),
 		_bindEvents: function() {
@@ -129,7 +121,7 @@
 				case 78: // next difference
 				if (this._curNo < (this._diffs.length - 1)) {
 					var self = this;
-					$(".file-content", this.elment).each(function(index) {
+					$(".file-content", this.tableWrapper).each(function(index) {
 						$("tr", $(this)).slice(self._diffs[self._curNo].start, self._diffs[self._curNo].end)
 							.find("td:not(.lineno)").removeClass("mismatch-highlight");
 					});
@@ -138,23 +130,23 @@
 						$("tr", $(this)).slice(self._diffs[self._curNo].start, self._diffs[self._curNo].end)
 							.find("td:not(.lineno)").addClass("mismatch-highlight");
 					});
-					this.element.scrollTop($($($(".file-content", this.element)[0])
+					this.tableWrapper.scrollTop($($($(".file-content", this.tableWrapper)[0])
 					.find("tr")[this._diffs[this._curNo].start + 1]).position().top-20);
 				}
 				break;
 				case 80: // previous difference
 				if (this._curNo > 0) {
 					var self = this;
-					$(".file-content", this.elment).each(function(index) {
+					$(".file-content", this.tableWrapper).each(function(index) {
 						$("tr", $(this)).slice(self._diffs[self._curNo].start, self._diffs[self._curNo].end)
 							.find("td:not(.lineno)").removeClass("mismatch-highlight");
 					});
 					this._curNo--;
-					$(".file-content", this.elment).each(function(index) {
+					$(".file-content", this.tableWrapper).each(function(index) {
 						$("tr", $(this)).slice(self._diffs[self._curNo].start, self._diffs[self._curNo].end)
 							.find("td:not(.lineno)").addClass("mismatch-highlight");
 					});
-					this.element.scrollTop($($($(".file-content", this.element)[0])
+					this.tableWrapper.scrollTop($($($(".file-content", this.tableWrapper)[0])
 					.find("tr")[this._diffs[this._curNo].start + 1]).position().top-20);
 				}
 				break;
@@ -165,19 +157,23 @@
 			}
 		},
 		_notify: null,
+		_getText: function(index, whichTable) {
+			if (index == null || index == undefined) {
+				return "";
+			}
+			if (whichTable.is(".left")) return this.rightData[index];
+			if (whichTable.is(".right")) return this.leftData[index];
+		},
 		_onMismatchedRowClick: function(e) {
 				var $this = $(e.currentTarget);
-				var index = $this.parent("tr").data("index");
-				var texts = [];
-				$("tr:nth-child(" + index + ")", $(this.element))
-					.children("td:not(.lineno)")
-					.each(function() { texts.push($(this).text()); });
-				var result = window.util.DiffString(texts[0], texts[1]);
-			if (this._notify == null) {
-				this._notify = $.pnotify({ title:"detail:<hr/>", text: result, sticker:false,
-				history:false, icon:false, type:"info", stack:false,animate_speed:"fast",
-				hide:false, addclass: "ui-pnotify-container-custom" });
-			}
+				var $parent = $this.parent();
+				var text1 = this._getText($parent.data("index"), $parent.parent().parent().parent());
+				var result = window.util.DiffString(text1, $this.text());
+				if (this._notify == null) {
+					this._notify = $.pnotify({ title:"detail:<hr/>", text: result, sticker:false,
+					history:false, icon:false, type:"info", stack:false,animate_speed:"fast",
+					hide:false, addclass: "ui-pnotify-container-custom" });
+				}
 			this._notify.pnotify({ text: result });
 		},
 		_onMismatchedRowDblClick: function(e) {
