@@ -2,4 +2,7 @@ diffjs
 ======
 
 file comparison implemented with javascript
-<img src="http://img.my.csdn.net/uploads/201210/10/1349883252_3569.png" />
+
+Works in latest FF/Chrome
+
+See more in <a src="https://github.com/zhenglong/diffjs/wiki">Wiki</a>
