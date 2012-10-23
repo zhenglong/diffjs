@@ -53,7 +53,7 @@
 					(j <= lines1.length && j < common.b)) { 
 					self._makeMismatch(i, lines0[i - 1], j-1, tableLeft); realI++;
 					self._makeMismatch(j, lines1[(j++) - 1], (i++)-1, tableRight); realJ++;
-				}				
+				}
 				while (i <= lines0.length && i < common.a) {
 					self._makeMismatch(i, lines0[i - 1], null, tableLeft); realI++;
 					self._makeMismatch("", "", (i++) - 1, tableRight); realJ++;
@@ -80,22 +80,35 @@
 			$("<div id='comparison-wrapper'></div>").append(wrapper).appendTo(this.element);
 			
 			var intervalId = setInterval(function () {
+				var total = realI - 2;
 				var width = $("#mismatch-indicator").width();
 				var height = $("#comparison-wrapper").height();
 				if (height <= 0) return;
-				var r = Raphael("mismatch-indicator", width, height);
-				var totalLines = tableLeft.find(".line-content").length;
-				height = Math.min(totalLines, height);
-				$.each(self._diffs, function(i, _diff) {
-					r.path(window.util.Format("M0 {0}L{1} {0}", 
-						Math.min(Math.ceil((_diff.start / totalLines) * height), height), width))
-						.attr({
-							"stroke":"red", 
-							"stroke-width":"" + Math.min(Math.ceil(((_diff.end - _diff.start + 1) / totalLines) * height, height))
-						});
-				});
 				clearInterval(intervalId);
 				intervalId = 0;
+				var r = Raphael("mismatch-indicator", width, height);
+				var h, nextX = 0, prevEnd = 0, glowWidth = 3, glow = null;
+				$.each(self._diffs, function(i, _diff) {
+					// the mismatched lines between (start, end]
+					h = ((_diff.end - _diff.start) / total) * height;
+					nextX = nextX + ((_diff.start - prevEnd) / total) * height;
+					r.rect(glowWidth, nextX, width - (2 * glowWidth), h).attr({ "fill":"red", "stroke-width":"0" })
+						.data("i", i)
+						.hover(function() {
+							glow = this.glow({"color":"#A2192D", "width":glowWidth});
+						}, function() {
+							glow.forEach(function(el) { el.remove(); });
+							glow.clear();
+							glow = null;
+						})
+						.click(function() {
+							self._curNo = this.data("i");
+							self.tableWrapper.scrollTop($(".file-content:eq(0)", self.tableWrapper)
+								.find("tr:eq(" + (self._diffs[self._curNo].start) + ")").position().top);
+						});
+					nextX = nextX + h;
+					prevEnd = _diff.end;
+				});
 			}, 30);
 			if (this._diffs.length > 0) {
 				this._curNo = 0;
@@ -121,33 +134,35 @@
 				case 78: // next difference
 				if (this._curNo < (this._diffs.length - 1)) {
 					var self = this;
-					$(".file-content", this.tableWrapper).each(function(index) {
+					var tables = $(".file-content", this.tableWrapper);
+					tables.each(function(index) {
 						$("tr", $(this)).slice(self._diffs[self._curNo].start, self._diffs[self._curNo].end)
 							.find("td:not(.lineno)").removeClass("mismatch-highlight");
 					});
 					this._curNo++;
-					$(".file-content", this.elment).each(function(index) {
+					tables.each(function(index) {
 						$("tr", $(this)).slice(self._diffs[self._curNo].start, self._diffs[self._curNo].end)
 							.find("td:not(.lineno)").addClass("mismatch-highlight");
 					});
-					this.tableWrapper.scrollTop($($($(".file-content", this.tableWrapper)[0])
-					.find("tr")[this._diffs[this._curNo].start + 1]).position().top-20);
+					this.tableWrapper.scrollTop($(".file-content:eq(0)", this.tableWrapper)
+					.find("tr:eq(" + (this._diffs[this._curNo].start) + ")").position().top);
 				}
 				break;
 				case 80: // previous difference
 				if (this._curNo > 0) {
 					var self = this;
-					$(".file-content", this.tableWrapper).each(function(index) {
-						$("tr", $(this)).slice(self._diffs[self._curNo].start, self._diffs[self._curNo].end)
+					var tables = $(".file-content", this.tableWrapper);
+					tables.each(function(index) {
+						$("tr", this).slice(self._diffs[self._curNo].start, self._diffs[self._curNo].end)
 							.find("td:not(.lineno)").removeClass("mismatch-highlight");
 					});
 					this._curNo--;
-					$(".file-content", this.tableWrapper).each(function(index) {
-						$("tr", $(this)).slice(self._diffs[self._curNo].start, self._diffs[self._curNo].end)
+					tables.each(function(index) {
+						$("tr", this).slice(self._diffs[self._curNo].start, self._diffs[self._curNo].end)
 							.find("td:not(.lineno)").addClass("mismatch-highlight");
 					});
-					this.tableWrapper.scrollTop($($($(".file-content", this.tableWrapper)[0])
-					.find("tr")[this._diffs[this._curNo].start + 1]).position().top-20);
+					this.tableWrapper.scrollTop($(".file-content:eq(0)", this.tableWrapper)
+					.find("tr:eq(" + (this._diffs[this._curNo].start) + ")").position().top);
 				}
 				break;
 				case 40: // next line
